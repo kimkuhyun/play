@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import 'leaflet/dist/leaflet.css';
 
 import { useCareerOS, useApplications, useResumes } from './hooks';
 import { DEFAULT_RESUME_BLOCKS } from './utils/mockData';
@@ -78,7 +79,7 @@ const CareerOS: React.FC = () => {
   );
 
   const handleAddKeywordWrapper = useCallback(
-    (keyword: string) => {
+    (keyword: string, _companyName?: string) => {
       if (analysisCompanyId === null) return;
       setEditorCompanyId(analysisCompanyId);
       addKeyword(analysisCompanyId, keyword);
@@ -140,12 +141,12 @@ const CareerOS: React.FC = () => {
               />
             </Panel>
             <PanelResizeHandle className="w-1 bg-slate-800 hover:bg-indigo-500 transition-colors" />
-            <Panel defaultSize={85} minSize={50}>
+            <Panel defaultSize={85} minSize={50} id="main-panel">
               <PanelGroup direction="horizontal">
-                <Panel defaultSize={60} minSize={30}>
+                <Panel defaultSize={60} minSize={30} id="content-panel">
                   {sidebarTab === 'search' && (
                     <PanelGroup direction="vertical">
-                      <Panel defaultSize={65} minSize={25}>
+                      <Panel defaultSize={60} minSize={25} id="map-panel">
                         <div className="h-full p-2 pb-1">
                           <MapWidget
                             companies={companies}
@@ -161,7 +162,7 @@ const CareerOS: React.FC = () => {
                           <PanelResizeHandle className="h-1 bg-slate-800 hover:bg-indigo-500 transition-colors flex items-center justify-center">
                             <div className="w-8 h-1.5 bg-slate-700 rounded-full" />
                           </PanelResizeHandle>
-                          <Panel defaultSize={35} minSize={20} collapsible onCollapse={() => setAnalysisCompanyId(null)}>
+                          <Panel defaultSize={40} minSize={20} collapsible onCollapse={() => setAnalysisCompanyId(null)} id="analysis-panel">
                             <div className="h-full p-2 pt-1">
                               <AnalysisWidget
                                 companies={companies}
@@ -252,6 +253,7 @@ const CareerOS: React.FC = () => {
                       minSize={20}
                       collapsible={true}
                       onCollapse={() => setEditorCompanyId(null)}
+                      id="editor-panel"
                     >
                       <div className="p-2 h-full animate-[slide-in-right_0.3s_ease-out]">
                         <EditorWidget
