@@ -1,11 +1,12 @@
 import React from 'react';
-import { Search, BarChart3, Inbox, Star, Mic, FileText, Layout, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Search, BarChart3, Inbox, Star, Mic, FileText, Layout, ChevronRight, ChevronLeft, LogOut } from 'lucide-react';
 
 interface SidebarProps {
   isCollapsed: boolean;
   onCollapse: (collapsed: boolean) => void;
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onLogout: () => void;
 }
 
 const NavItem: React.FC<{
@@ -27,7 +28,7 @@ const NavItem: React.FC<{
   </button>
 );
 
-export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapse, activeTab, onTabChange }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapse, activeTab, onTabChange, onLogout }) => {
   return (
     <div className="h-full flex flex-col bg-slate-900 text-white p-2">
       <div className="flex items-center justify-between p-2 mb-4">
@@ -96,6 +97,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onCollapse, activ
         >
           설정
         </NavItem>
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors text-slate-400 hover:bg-slate-800/50 hover:text-white"
+        >
+          <LogOut size={16} />
+          {!isCollapsed && <span className="flex-1 text-left">로그아웃</span>}
+        </button>
       </div>
     </div>
   );

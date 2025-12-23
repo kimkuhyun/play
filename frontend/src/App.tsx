@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import 'leaflet/dist/leaflet.css';
 
-import { useCareerOS, useApplications, useResumes } from './hooks';
+import { useCareerOS, useApplications, useResumes, useAuth } from './hooks';
 import { DEFAULT_RESUME_BLOCKS } from './utils/mockData';
 import { CommandCenter } from './components/views/CommandCenter';
 import { ProcessingScreen } from './components/views/ProcessingScreen';
@@ -15,11 +15,22 @@ import { SettingsView } from './components/views/SettingsView';
 import { MapWidget } from './components/widgets/MapWidget';
 import { AnalysisWidget } from './components/widgets/AnalysisWidget';
 import { EditorWidget } from './components/widgets/EditorWidget';
+import { AuthView } from './components/views/AuthView';
 import { Sidebar } from './components/widgets/Sidebar';
 import { EditApplicationModal } from './components/modals/EditApplicationModal';
 import { JobPostingModal } from './components/modals/JobPostingModal';
 
-const CareerOS: React.FC = () => {
+interface CareerOSProps {
+  onLogout: () => void;
+  onGenerateRecoveryCodes: () => void;
+  recoveryCodes: string[] | null;
+}
+
+const CareerOS: React.FC<CareerOSProps> = ({
+  onLogout,
+  onGenerateRecoveryCodes,
+  recoveryCodes,
+}) => {
   const {
     viewState,
     companies,
@@ -128,6 +139,7 @@ const CareerOS: React.FC = () => {
                 isCollapsed={isSidebarCollapsed}
                 onCollapse={setIsSidebarCollapsed}
                 activeTab={sidebarTab}
+                onLogout={onLogout}
                 onTabChange={(tab: any) => {
                   setSidebarTab(tab);
                   if (tab !== 'search') {
@@ -239,7 +251,14 @@ const CareerOS: React.FC = () => {
                     />
                   )}
                   {sidebarTab === 'prep' && <InterviewPrepView companies={companies} />}
-                  {sidebarTab === 'settings' && <SettingsView onClearData={handleClearData} />}
+                  {sidebarTab === 'settings' && (
+                    <SettingsView
+                      onClearData={handleClearData}
+                      onGenerateRecoveryCodes={onGenerateRecoveryCodes}
+                      recoveryCodes={recoveryCodes}
+                      onLogout={onLogout}
+                    />
+                  )}
                 </Panel>
 
                 {editorCompanyId !== null && (
@@ -314,4 +333,46 @@ const CareerOS: React.FC = () => {
   );
 };
 
-export default CareerOS;
+const App: React.FC = () => {
+  const {
+    status,
+    error,
+    notice,
+    registerPasskey,
+    loginPasskey,
+    loginRecoveryCode,
+    generateRecoveryCodes,
+    recoveryCodes,
+    logout,
+  } = useAuth();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        ?? ?...
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <AuthView
+        onRegister={registerPasskey}
+        onLogin={loginPasskey}
+        onRecovery={loginRecoveryCode}
+        notice={notice}
+        error={error}
+      />
+    );
+  }
+
+  return (
+    <CareerOS
+      onLogout={logout}
+      onGenerateRecoveryCodes={generateRecoveryCodes}
+      recoveryCodes={recoveryCodes}
+    />
+  );
+};
+
+export default App;

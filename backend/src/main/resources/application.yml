@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/appdb}
+    username: ${SPRING_DATASOURCE_USERNAME:app}
+    password: ${SPRING_DATASOURCE_PASSWORD:app}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+app:
+  webauthn:
+    rpId: localhost
+    rpName: Play
+    origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+    allowOriginPort: false
+    allowOriginSubdomain: false
+
+server:
+  address: 0.0.0.0
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: Lax
